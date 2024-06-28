@@ -1,0 +1,10 @@
+:root {
+  --color: '255,255,255';
+  --focusColor: #262727;
+}
+
+html,
+body,
+#root {
+  background: transparent;
+}

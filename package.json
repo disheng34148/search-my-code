@@ -1,0 +1,63 @@
+{
+  "name": "search-my-code",
+  "displayName": "search-my-code",
+  "description": "显示自己修改过的文件",
+  "version": "1.0.0",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onView:search-my-code.sidebarView"
+  ],
+  "main": "./ext/extension.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "watch": "vite build --watch",
+    "preview": "vite preview"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "extension.openFile",
+        "title": "open file"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "search-my-code",
+          "title": "搜索",
+          "icon": "logo.svg"
+        }
+      ]
+    },
+    "views": {
+      "search-my-code": [
+        {
+          "id": "sidebarView",
+          "name": "",
+          "type": "webview"
+        }
+      ]
+    }
+  },
+  "enabledApiProposals": [
+    "findTextInFiles"
+  ],
+  "dependencies": {
+    "@vscode/codicons": "^0.0.36",
+    "@vscode/webview-ui-toolkit": "^1.4.0",
+    "element-plus": "^2.7.6",
+    "vscode": "^1.1.37",
+    "vue": "^3.4.29"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.5",
+    "unplugin-element-plus": "^0.8.0",
+    "vite": "^5.3.1"
+  }
+}
