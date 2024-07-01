@@ -18,9 +18,20 @@ function activate(context) {
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("extension.openFile", async (filePath) => {
-      const document = await vscode.workspace.openTextDocument(filePath);
-      vscode.window.showTextDocument(document);
+    vscode.commands.registerCommand("extension.openFile", async (filePath, fileData) => {
+      try {
+        const {startPos, endPos} = fileData
+        const document = await vscode.workspace.openTextDocument(filePath);
+        const editor = await vscode.window.showTextDocument(document);
+        const startPosition = new vscode.Position(startPos.line, startPos.character);
+        const endPosition = new vscode.Position(endPos.line, endPos.character);
+        const newSelection = new vscode.Selection(startPosition, endPosition);
+  
+        editor.selection = newSelection;
+        editor.revealRange(newSelection, vscode.TextEditorRevealType.InCenter);
+      } catch (error) {
+        console.log(error)        
+      }
     })
   );
 }
@@ -48,16 +59,17 @@ class SidebarViewProvider {
 
     webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
 
-    webviewView.webview.onDidReceiveMessage((message) => {
+    webviewView.webview.onDidReceiveMessage(async (message) => {
       const msg = JSON.parse(message);
       const data = msg.data;
 
       switch (msg.command) {
         case "openFile":
-          openFile(data.log);
+          openFile(data);
           break;
         case "search":
-          const result = searchKeword(data)
+          const result = await searchKeword(data)
+          
           webviewView.webview.postMessage({
             command: "searchResult",
             data: result,

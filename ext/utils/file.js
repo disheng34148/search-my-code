@@ -2,14 +2,15 @@ const vscode = require("vscode");
 const path = require("path");
 
 module.exports = {
-  openFile(filePath) {
+  openFile(data) {
+    const { log, startPos } = data;
     const workspaceFolder = vscode.workspace.workspaceFolders[0];
     const workspaceFolderPath = workspaceFolder.uri.fsPath;
 
-    const fullPath = path.join(workspaceFolderPath, filePath);
+    const fullPath = startPos ? log : path.join(workspaceFolderPath, log);
     const vscodePath = vscode.Uri.file(fullPath);
 
-    vscode.commands.executeCommand("extension.openFile", vscodePath);
+    vscode.commands.executeCommand("extension.openFile", vscodePath, data);
   },
   async searchKeword({ keyword, files }) {
     let filePaths = [];
@@ -39,7 +40,7 @@ module.exports = {
           matchingFiles.push({ filePath, startPos, endPos, lineText });
         }
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     }
 

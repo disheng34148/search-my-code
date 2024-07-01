@@ -1,8 +1,8 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import { ElTreeV2, ElTree } from "element-plus";
-import changeTheme from './utils/theme';
-import { debounce } from './utils/util'
+import changeTheme from "./utils/theme";
+import { debounce, formatSearchResult } from "./utils/util";
 
 const vscode = acquireVsCodeApi();
 const treeData = ref([]);
@@ -22,7 +22,6 @@ const openFile = (node, data) => {
 
 onMounted(() => {
   window.addEventListener("message", (event) => {
-    console.log(event, "@@@@@@");
     const { command, data } = event.data;
 
     switch (command) {
@@ -32,10 +31,11 @@ onMounted(() => {
         break;
       case "theme":
         theme.value = data.isDark ? "dark" : "light";
-        changeTheme(theme.value)
+        changeTheme(theme.value);
         break;
       case "searchResult":
-
+        treeData.value = formatSearchResult(data);
+        console.log(treeData.value, "@@@@@");
         break;
 
       default:
@@ -43,32 +43,36 @@ onMounted(() => {
     }
   });
 
-  const field = document.getElementById('search-input')
+  const field = document.getElementById("search-input");
   const search = (value) => {
-    if(!value) {
-      treeData.value = cacheTreeData
+    if (!value) {
+      treeData.value = cacheTreeData;
     } else {
       vscode.postMessage(
         JSON.stringify({
           command: "search",
           data: {
             keyword: value,
-            files: cacheTreeData
+            files: cacheTreeData,
           },
         })
       );
     }
-  }
+  };
   const debouncedSearch = debounce(search, 300);
 
-  field.addEventListener('input', e => {
-    debouncedSearch(e.target.value)
-  })
+  field.addEventListener("input", (e) => {
+    debouncedSearch(e.target.value);
+  });
 });
 </script>
 
 <template>
-  <vscode-text-field placeholder="Search..." class="search-input" id="search-input">
+  <vscode-text-field
+    placeholder="Search..."
+    class="search-input"
+    id="search-input"
+  >
     <section
       slot="end"
       style="
@@ -101,7 +105,9 @@ onMounted(() => {
     <template #default="{ node, data }">
       <div class="custom-tree-node" @click="openFile(node, data)">
         <span class="custom-tree-node-title">{{ node.label }}</span>
-        <span class="custom-tree-node-desc" v-if="data.path">{{ data.path }}</span>
+        <span class="custom-tree-node-desc" v-if="data.path">{{
+          data.path
+        }}</span>
       </div>
     </template>
   </el-tree>
