@@ -5,6 +5,13 @@
 
 html,
 body,
-#root {
+#app {
   background: transparent;
+  overflow: hidden;
+  height: 100vh;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
 }

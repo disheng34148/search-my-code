@@ -9,7 +9,7 @@ const treeData = ref([]);
 let cacheTreeData = [];
 const theme = ref();
 
-const openFile = (node, data) => {
+const openFile = (data) => {
   if (!data.hash) {
     vscode.postMessage(
       JSON.stringify({
@@ -64,58 +64,72 @@ onMounted(() => {
   field.addEventListener("input", (e) => {
     debouncedSearch(e.target.value);
   });
+  field.addEventListener("keydown", (e) => {
+    if(e.key === 'Enter') {
+      search(e.target.value)
+    }
+  })
 });
 </script>
 
 <template>
-  <vscode-text-field
-    placeholder="Search..."
-    class="search-input"
-    id="search-input"
-  >
-    <section
-      slot="end"
-      style="
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
-      "
+  <div>
+    <vscode-text-field
+      placeholder="Search..."
+      class="search-input"
+      id="search-input"
     >
-      <vscode-button
-        appearance="icon"
-        aria-label="Match Case"
-        class="search-btn"
+      <section
+        slot="end"
+        style="
+          display: flex;
+          flex-direction: row;
+          justify-content: center;
+          align-items: center;
+        "
       >
-        <span class="codicon codicon-case-sensitive"></span>
-      </vscode-button>
-    </section>
-  </vscode-text-field>
+        <vscode-button
+          appearance="icon"
+          aria-label="Match Case"
+          class="search-btn"
+        >
+          <span class="codicon codicon-case-sensitive"></span>
+        </vscode-button>
+      </section>
+    </vscode-text-field>
+  </div>
 
-  <el-tree
-    class="search-tree"
-    :data="treeData"
-    :props="{
-      label: 'message',
-      path: 'path',
-      children: 'files',
-    }"
-    default-expand-all
-  >
-    <template #default="{ node, data }">
-      <div class="custom-tree-node" @click="openFile(node, data)">
-        <span class="custom-tree-node-title">{{ node.label }}</span>
-        <span class="custom-tree-node-desc" v-if="data.path">{{
-          data.path
-        }}</span>
-      </div>
-    </template>
-  </el-tree>
+  <div class="search-tree-wrapper">
+    <el-tree
+      class="search-tree"
+      :data="treeData"
+      :props="{
+        label: 'message',
+        path: 'path',
+        children: 'files',
+      }"
+      default-expand-all
+      @node-click="openFile"
+    >
+      <template #default="{ node, data }">
+        <div class="custom-tree-node">
+          <span class="custom-tree-node-title">{{ node.label }}</span>
+          <span class="custom-tree-node-desc" v-if="data.path">{{
+            data.path
+          }}</span>
+        </div>
+      </template>
+    </el-tree>
+  </div>
 </template>
 
 <style scoped>
+.search-tree-wrapper {
+  flex: 1;
+  overflow-y: auto;
+}
 .search-tree {
-  height: 100%;
+  /* height: 100%; */
   background: transparent;
   color: rgba(var(----color), 0.75);
 }

@@ -1,3 +1,5 @@
+const { relativeTimes } = require("./date.js");
+
 module.exports = {
   parseLog(logData) {
     let result = [];
@@ -14,17 +16,18 @@ module.exports = {
           hash: match[1],
           author: match[2],
           datetime: match[3],
+          path: relativeTimes(match[3]),
           message: match[4],
           files: [],
         });
       } else {
         const lastLog = result[result.length - 1];
-        const lastSlashIndex = log.lastIndexOf('/');
-        
+        const lastSlashIndex = log.lastIndexOf("/");
+
         lastLog.files.push({
           message: lastSlashIndex === -1 ? log : log.substring(lastSlashIndex + 1),
           path: log.substring(0, lastSlashIndex),
-          log
+          log,
         });
       }
     });

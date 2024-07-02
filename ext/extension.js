@@ -30,7 +30,7 @@ function activate(context) {
         editor.selection = newSelection;
         editor.revealRange(newSelection, vscode.TextEditorRevealType.InCenter);
       } catch (error) {
-        console.log(error)        
+        console.log(error)
       }
     })
   );

@@ -23,16 +23,11 @@ export function formatSearchResult(data) {
     return item
   })
 
-  console.log(resultData, 'vvvvvvvvvvvvv')
-
   resultData.forEach(item => {
     const isInclude = result.findIndex(r => item.filePath === r.log)
     if(isInclude > -1) {
-      const lastSlashIndex = item.filePath.lastIndexOf('/');
-
       result[isInclude].files.push({
-        message: lastSlashIndex === -1 ? item.filePath : item.filePath.substring(lastSlashIndex + 1),
-        path: item.filePath.substring(0, lastSlashIndex),
+        message: item.lineText.trim(),
         log: item.filePath,
         endPos: item.endPos,
         startPos: item.startPos
