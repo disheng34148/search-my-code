@@ -1,4 +1,4 @@
-import slash from 'slash'
+import slash from "slash";
 
 export function debounce(func, wait) {
   let timeout;
@@ -12,42 +12,59 @@ export function debounce(func, wait) {
 }
 
 export function formatSearchResult(data) {
-  if(!Array.isArray(data) || !data.length) return;
+  const { keyword, matchingFiles } = data;
+  if (!Array.isArray(matchingFiles) || !matchingFiles.length) return;
 
-  const result = []
-  let resultData = []
+  const result = [];
+  let resultData = [];
 
-  resultData = data.map(item => {
-    item.filePath = slash(item.filePath)
+  resultData = matchingFiles.map((item) => {
+    item.filePath = slash(item.filePath);
 
-    return item
-  })
+    return item;
+  });
 
-  resultData.forEach(item => {
-    const isInclude = result.findIndex(r => item.filePath === r.log)
-    if(isInclude > -1) {
+  resultData.forEach((item) => {
+    const isInclude = result.findIndex((r) => item.filePath === r.log);
+    if (isInclude > -1) {
+      const lineText = item.lineText.trim();
+      const keywordIndex = lineText.indexOf(keyword);
+
       result[isInclude].files.push({
-        message: item.lineText.trim(),
+        message: keyword,
+        frontLabel: lineText.slice(0, keywordIndex),
+        endLabel: lineText.slice(keywordIndex + keyword.length),
         log: item.filePath,
         endPos: item.endPos,
-        startPos: item.startPos
-      })
+        startPos: item.startPos,
+        type: "search",
+      });
     } else {
-      const lastSlashIndex = item.filePath.lastIndexOf('/');
+      const lastSlashIndex = item.filePath.lastIndexOf("/");
+      const lineText = item.lineText.trim();
+      const keywordIndex = lineText.indexOf(keyword);
 
       result.push({
-        message: lastSlashIndex === -1 ? item.filePath : item.filePath.substring(lastSlashIndex + 1),
+        message:
+          lastSlashIndex === -1
+            ? item.filePath
+            : item.filePath.substring(lastSlashIndex + 1),
         path: item.filePath.substring(0, lastSlashIndex),
         log: item.filePath,
-        files: [{
-          log: item.filePath,
-          message: item.lineText.trim(),
-          endPos: item.endPos,
-          startPos: item.startPos
-        }]
-      })
+        files: [
+          {
+            log: item.filePath,
+            message: keyword,
+            frontLabel: lineText.slice(0, keywordIndex),
+            endLabel: lineText.slice(keywordIndex + keyword.length),
+            endPos: item.endPos,
+            startPos: item.startPos,
+            type: "search",
+          },
+        ],
+      });
     }
-  })
+  });
 
-  return result
+  return result;
 }

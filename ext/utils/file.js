@@ -42,6 +42,6 @@ module.exports = {
       } catch (error) {}
     }
 
-    return matchingFiles;
+    return { matchingFiles, keyword };
   },
 };

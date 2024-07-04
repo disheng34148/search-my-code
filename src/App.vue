@@ -9,9 +9,11 @@ const treeData = ref([]);
 let cacheTreeData = [];
 const theme = ref();
 const keyword = ref();
-const match = ref('gi');
+const match = ref("gi");
+const loading = ref(true);
 
 const openFile = (data) => {
+  console.log(data);
   if (!data.hash) {
     vscode.postMessage(
       JSON.stringify({
@@ -26,12 +28,12 @@ const openFile = (data) => {
 const clickBtn = (e) => {
   const target = e.target.parentElement;
 
-  if(target.classList.contains('selected')) {
-    match.value = 'gi'
-    target.classList.remove('selected')
+  if (target.classList.contains("selected")) {
+    match.value = "gi";
+    target.classList.remove("selected");
   } else {
-    match.value = 'g'
-    target.classList.add('selected')
+    match.value = "g";
+    target.classList.add("selected");
   }
 
   vscode.postMessage(
@@ -40,11 +42,11 @@ const clickBtn = (e) => {
       data: {
         keyword: keyword.value,
         files: cacheTreeData,
-        match: match.value
+        match: match.value,
       },
     })
   );
-}
+};
 
 onMounted(() => {
   window.addEventListener("message", (event) => {
@@ -54,6 +56,7 @@ onMounted(() => {
       case "getFiles":
         treeData.value = data;
         cacheTreeData = data;
+        loading.value = false;
         break;
       case "theme":
         theme.value = data.isDark ? "dark" : "light";
@@ -61,6 +64,8 @@ onMounted(() => {
         break;
       case "searchResult":
         treeData.value = formatSearchResult(data);
+        console.log(treeData.value, '@@@@@@@@')
+        loading.value = false;
         break;
 
       default:
@@ -79,7 +84,7 @@ onMounted(() => {
           data: {
             keyword: value,
             files: cacheTreeData,
-            match: match.value
+            match: match.value,
           },
         })
       );
@@ -92,10 +97,10 @@ onMounted(() => {
     debouncedSearch(e.target.value);
   });
   field.addEventListener("keydown", (e) => {
-    if(e.key === 'Enter') {
+    if (e.key === "Enter") {
       debouncedSearch(e.target.value);
     }
-  })
+  });
 });
 </script>
 
@@ -131,18 +136,24 @@ onMounted(() => {
   <div class="search-tree-wrapper">
     <el-tree
       class="search-tree"
+      v-loading="loading"
       :data="treeData"
       :props="{
         label: 'message',
         path: 'path',
-        children: 'files',
+        children: 'files'
       }"
       default-expand-all
       @node-click="openFile"
     >
       <template #default="{ node, data }">
         <div class="custom-tree-node">
-          <span class="custom-tree-node-title">{{ node.label }}</span>
+          <span class="custom-tree-node-title" v-if="data.type === 'search'">
+            <span class="title-item">{{ data.frontLabel }}</span>
+            <span class="title-main">{{ node.label }}</span>
+            <span class="title-item">{{ data.endLabel }}</span>
+          </span>
+          <span v-else class="custom-tree-node-title">{{ node.label }}</span>
           <span class="custom-tree-node-desc" v-if="data.path">{{
             data.path
           }}</span>
@@ -183,6 +194,11 @@ onMounted(() => {
   opacity: 0.65;
   margin-left: 15px;
   line-height: 1;
+  display: flex;
+  align-items: center;
+}
+.custom-tree-node-title .title-main {
+  background: rgba(97, 153, 255, 0.18);
 }
 .search-input::part(root) {
   background: transparent;
