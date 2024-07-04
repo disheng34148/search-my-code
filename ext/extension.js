@@ -23,12 +23,14 @@ function activate(context) {
         const {startPos, endPos} = fileData
         const document = await vscode.workspace.openTextDocument(filePath);
         const editor = await vscode.window.showTextDocument(document);
-        const startPosition = new vscode.Position(startPos.line, startPos.character);
-        const endPosition = new vscode.Position(endPos.line, endPos.character);
-        const newSelection = new vscode.Selection(startPosition, endPosition);
-  
-        editor.selection = newSelection;
-        editor.revealRange(newSelection, vscode.TextEditorRevealType.InCenter);
+        if(startPos) {
+          const startPosition = new vscode.Position(startPos.line, startPos.character);
+          const endPosition = new vscode.Position(endPos.line, endPos.character);
+          const newSelection = new vscode.Selection(startPosition, endPosition);
+    
+          editor.selection = newSelection;
+          editor.revealRange(newSelection, vscode.TextEditorRevealType.InCenter);
+        }
       } catch (error) {
         console.log(error)
       }

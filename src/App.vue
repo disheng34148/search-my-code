@@ -8,6 +8,8 @@ const vscode = acquireVsCodeApi();
 const treeData = ref([]);
 let cacheTreeData = [];
 const theme = ref();
+const keyword = ref();
+const match = ref('gi');
 
 const openFile = (data) => {
   if (!data.hash) {
@@ -19,6 +21,30 @@ const openFile = (data) => {
     );
   }
 };
+
+// 是否大小写
+const clickBtn = (e) => {
+  const target = e.target.parentElement;
+
+  if(target.classList.contains('selected')) {
+    match.value = 'gi'
+    target.classList.remove('selected')
+  } else {
+    match.value = 'g'
+    target.classList.add('selected')
+  }
+
+  vscode.postMessage(
+    JSON.stringify({
+      command: "search",
+      data: {
+        keyword: keyword.value,
+        files: cacheTreeData,
+        match: match.value
+      },
+    })
+  );
+}
 
 onMounted(() => {
   window.addEventListener("message", (event) => {
@@ -35,7 +61,6 @@ onMounted(() => {
         break;
       case "searchResult":
         treeData.value = formatSearchResult(data);
-        console.log(treeData.value, "@@@@@");
         break;
 
       default:
@@ -54,10 +79,12 @@ onMounted(() => {
           data: {
             keyword: value,
             files: cacheTreeData,
+            match: match.value
           },
         })
       );
     }
+    keyword.value = value;
   };
   const debouncedSearch = debounce(search, 300);
 
@@ -66,7 +93,7 @@ onMounted(() => {
   });
   field.addEventListener("keydown", (e) => {
     if(e.key === 'Enter') {
-      search(e.target.value)
+      debouncedSearch(e.target.value);
     }
   })
 });
@@ -92,6 +119,8 @@ onMounted(() => {
           appearance="icon"
           aria-label="Match Case"
           class="search-btn"
+          id="search-btn"
+          @click="clickBtn"
         >
           <span class="codicon codicon-case-sensitive"></span>
         </vscode-button>
@@ -129,7 +158,6 @@ onMounted(() => {
   overflow-y: auto;
 }
 .search-tree {
-  /* height: 100%; */
   background: transparent;
   color: rgba(var(----color), 0.75);
 }
@@ -160,7 +188,10 @@ onMounted(() => {
   background: transparent;
 }
 .search-btn:hover {
-  border: 0;
   outline: none;
+  background: transparent;
+}
+.search-btn.selected {
+  border: 1px solid #007acc;
 }
 </style>

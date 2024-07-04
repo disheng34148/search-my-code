@@ -12,7 +12,7 @@ module.exports = {
 
     vscode.commands.executeCommand("extension.openFile", vscodePath, data);
   },
-  async searchKeword({ keyword, files }) {
+  async searchKeword({ keyword, files, match }) {
     let filePaths = [];
     const matchingFiles = [];
     const workspaceFolder = vscode.workspace.workspaceFolders[0].uri.fsPath;
@@ -30,18 +30,16 @@ module.exports = {
       try {
         const document = await vscode.workspace.openTextDocument(uri);
         const text = document.getText();
-        const regex = new RegExp(keyword, "g");
-        let match;
+        const regex = new RegExp(keyword, match);
+        let matchText;
 
-        while ((match = regex.exec(text)) !== null) {
-          const startPos = document.positionAt(match.index);
-          const endPos = document.positionAt(match.index + keyword.length);
+        while ((matchText = regex.exec(text)) !== null) {
+          const startPos = document.positionAt(matchText.index);
+          const endPos = document.positionAt(matchText.index + keyword.length);
           const lineText = document.lineAt(startPos.line).text;
           matchingFiles.push({ filePath, startPos, endPos, lineText });
         }
-      } catch (error) {
-        // console.log(error);
-      }
+      } catch (error) {}
     }
 
     return matchingFiles;
