@@ -1,0 +1,8 @@
+node_modules
+src
+.vscode
+public
+vite.config.js
+yarn.lock
+search-logo.png
+package-lock.json

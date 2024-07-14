@@ -25,7 +25,7 @@ function getModifiedFiles(time) {
 
     getGitUserName().then((username) => {
       exec(
-        `git log --author=${username} --pretty=format:"%h - %an, %ad : %s" --date=format:"%Y-%m-%d %H:%M:%S" --name-only --since="3 month ago" --until="now"`,
+        `git log --author=${username} --pretty=format:"%h - %an, %ad : %s" --date=format:"%Y-%m-%d %H:%M:%S" --name-only --since="5 month ago" --until="now"`,
         { cwd: workspaceFolderPath },
         (err, stdout) => {
           if (err) {
