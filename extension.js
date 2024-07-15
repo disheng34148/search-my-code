@@ -1,6 +1,6 @@
 const vscode = require("vscode");
-const { getModifiedFiles } = require("./utils/getGitLog.js");
-const { openFile, searchKeword } = require("./utils/file.js");
+const { getModifiedFiles } = require("./ext/utils/getGitLog.js");
+const { openFile, searchKeword } = require("./ext/utils/file.js");
 
 function activate(context) {
   const provider = new SidebarViewProvider(context);
@@ -32,7 +32,7 @@ function activate(context) {
           editor.revealRange(newSelection, vscode.TextEditorRevealType.InCenter);
         }
       } catch (error) {
-        console.log(error)
+        vscode.window.showInformationMessage(error);
       }
     })
   );
@@ -105,40 +105,45 @@ class SidebarViewProvider {
   }
 
   _getHtmlForWebview(webview) {
-    const styleUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "dist", "index.css")
-    );
-    const codiconsUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(
-        this._extensionUri,
-        "node_modules",
-        "@vscode/codicons",
-        "dist",
-        "codicon.css"
-      )
-    );
-    const scriptUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "dist", "index.js")
-    );
-
-    const nonce = getNonce();
-
-    return `
-      <!DOCTYPE html>
-        <html lang="en">
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <link href="${codiconsUri}" rel="stylesheet" nonce="${nonce}">
-          <link href="${styleUri}" rel="stylesheet" nonce="${nonce}">
-          <title>搜索自己的代码</title>
-        </head>
-        <body>
-          <div id="app"></div>
-          <script nonce="${nonce}" type="module" src="${scriptUri}"></script>
-        </body>
-      </html>
-    `;
+    try {
+      vscode.window.showInformationMessage(vscode.Uri.joinPath(this._extensionUri, "dist", "index.css"));
+      const styleUri = webview.asWebviewUri(
+        vscode.Uri.joinPath(this._extensionUri, "dist", "index.css")
+      );
+      const codiconsUri = webview.asWebviewUri(
+        vscode.Uri.joinPath(
+          this._extensionUri,
+          "node_modules",
+          "@vscode/codicons",
+          "dist",
+          "codicon.css"
+        )
+      );
+      const scriptUri = webview.asWebviewUri(
+        vscode.Uri.joinPath(this._extensionUri, "dist", "index.js")
+      );
+  
+      const nonce = getNonce();
+  
+      return `
+        <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <link href="${codiconsUri}" rel="stylesheet" nonce="${nonce}">
+            <link href="${styleUri}" rel="stylesheet" nonce="${nonce}">
+            <title>搜索自己的代码</title>
+          </head>
+          <body>
+            <div id="app"></div>
+            <script nonce="${nonce}" type="module" src="${scriptUri}"></script>
+          </body>
+        </html>
+      `;
+    } catch (error) {
+      vscode.window.showInformationMessage(error);
+    }
   }
 }
 

@@ -3,7 +3,9 @@ import "./style.css";
 import App from "./App.vue";
 
 import("@vscode/webview-ui-toolkit/dist/toolkit").then((toolkit) => {
-  toolkit.default();
+  // if(toolkit) {
+  //   toolkit.default()
+  // }
 });
 
 createApp(App).mount("#app");

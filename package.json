@@ -3,7 +3,8 @@
   "displayName": "search-my-code",
   "description": "显示自己修改过的文件",
   "publisher": "disheng",
-  "version": "1.0.1",
+  "version": "1.0.8",
+  "icon": "search-logo.png",
   "engines": {
     "vscode": "^0.10.5"
   },
@@ -11,13 +12,17 @@
     "type": "git",
     "url": "https://github.com/disheng34148/search-my-code.git"
   },
+  "localizedLanguages": [
+    "zh-cn",
+    "en"
+  ],
   "categories": [
     "Other"
   ],
   "activationEvents": [
     "onView:search-my-code.sidebarView"
   ],
-  "main": "./ext/extension.js",
+  "main": "extension.js",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

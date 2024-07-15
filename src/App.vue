@@ -64,7 +64,6 @@ onMounted(() => {
         break;
       case "searchResult":
         treeData.value = formatSearchResult(data);
-        console.log(treeData.value, '@@@@@@@@')
         loading.value = false;
         break;
 
